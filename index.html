@@ -4,86 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Geurshom Service Studio</title>
-
+<link rel="icon" href="logo.png">
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <style>
-body { font-family: Arial; background:#f2f2f2; margin:0; }
-header { background:#0a3d62; color:white; padding:15px; text-align:center; }
-.container { padding:15px; }
-.box { background:white; padding:15px; margin-bottom:15px; border-radius:6px; }
-button { padding:10px 15px; background:#0a3d62; color:white; border:none; border-radius:5px; cursor:pointer; }
-button.red { background:#c0392b; }
-.hidden { display:none; }
-.lock { color:red; font-weight:bold; }
-input { width:100%; padding:10px; margin:5px 0; }
-.movie { padding:8px 0; border-bottom:1px solid #ddd; }
-footer { background:#222; color:white; text-align:center; padding:10px; }
+body { font-family:'Segoe UI',sans-serif; margin:0; background:#f5f6fa; color:#2d3436 }
+header { background: linear-gradient(90deg,#0a3d62,#2980b9); color:white; padding:25px; text-align:center; position:sticky; top:0; z-index:100 }
+header img { height:60px; vertical-align:middle; margin-right:10px; }
+h1,h2,h3 { margin:5px 0 }
+.container { max-width:1000px; margin:auto; padding:20px }
+.card { background:white; padding:20px; margin:15px 0; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:0.3s }
+.card:hover { transform:translateY(-5px); box-shadow:0 10px 25px rgba(0,0,0,0.2); }
+button { padding:12px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s; }
+button.primary { background:#0a3d62; color:white }
+button.primary:hover { background:#2980b9 }
+button.red { background:#c0392b; color:white }
+button.red:hover { background:#e74c3c }
+button.disabled { background:#7f8c8d; cursor:not-allowed }
+#searchInput { width:100%; padding:12px 15px; border-radius:8px; border:1px solid #ccc; margin-bottom:20px }
+.lock { color:red; font-weight:bold; font-size:14px }
+
+/* ===== ADS ===== */
+.ad-banner { background:#ffeaa7; text-align:center; padding:15px; border-radius:10px; margin:20px 0; font-weight:bold; color:#2d3436; box-shadow:0 5px 10px rgba(0,0,0,0.1); transition:0.3s; }
+.ad-banner:hover { background:#fdcb6e; transform:scale(1.02); }
+
+footer { background:#222; color:white; text-align:center; padding:15px; margin-top:20px }
+@media(max-width:768px){ .card { padding:15px; margin:10px 0; } header img { height:50px; } }
 </style>
 </head>
 <body>
 
 <header>
-<h2>GEURSHOM SERVICE STUDIO</h2>
+<img src="logo.png" alt="Logo">
+<h1>GEURSHOM SERVICE STUDIO</h1>
 <p>VIP = 300 RWF / WEEK</p>
 </header>
 
 <div class="container">
 
 <!-- LOGIN -->
-<div class="box" id="loginBox">
+<div class="card" id="loginBox">
 <h3>🔐 Login / Register</h3>
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
+<input id="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+<button class="primary" onclick="register()">Register</button>
+<button class="primary" onclick="login()">Login</button>
 </div>
 
 <!-- SEARCH -->
-<div class="box hidden" id="searchBox">
+<div class="card hidden" id="searchBox">
 <input id="searchInput" placeholder="Shakisha film cyangwa umusobanuzi..." onkeyup="searchContent()">
 </div>
 
 <!-- CONTENT -->
-<div class="box hidden" id="contentBox">
+<div class="card hidden" id="contentBox">
 <h3>🎬 AGASOBANUYE</h3>
-<div class="movie vip">
+<div class="card movie vip">
 <b>Rocky Kimono – Film 1</b>
 <span id="vipLock1" class="lock">🔒 VIP</span><br>
-<button onclick="downloadVIP('FILE_ID_1')">⬇️ Download</button>
+<button class="primary" onclick="downloadVIP('FILE_ID_1')">⬇️ Download</button>
 </div>
-<div class="movie free">
+<div class="card movie free">
 <b>Gaheza Simba – Film 2</b><br>
-<button onclick="play('Free Content')">▶ Reba</button>
+<button class="primary" onclick="play('Free Content')">▶ Reba</button>
 </div>
-<div class="movie vip">
+<div class="card movie vip">
 <b>Saga Mwiza – Film 3</b>
 <span id="vipLock2" class="lock">🔒 VIP</span><br>
-<button onclick="downloadVIP('FILE_ID_2')">⬇️ Download</button>
+<button class="primary" onclick="downloadVIP('FILE_ID_2')">⬇️ Download</button>
 </div>
-<button onclick="showVIP()">⭐ Become VIP</button>
-<button onclick="logout()">Logout</button>
+<button class="primary" onclick="showVIP()">⭐ Become VIP</button>
+<button class="red" onclick="logout()">Logout</button>
 </div>
 
 <!-- VIP PAYMENT -->
-<div class="box hidden" id="vipBox">
+<div class="card hidden" id="vipBox">
 <h3>⭐ Become VIP</h3>
 <p>💳 MTN MoMo: <b>+250 792 552 013</b></p>
 <p>💰 300 RWF / 7 Days</p>
-<button onclick="requestVIP()">I PAID</button>
+<button class="primary" onclick="requestVIP()">I PAID</button>
 <button class="red" onclick="closeVIP()">Close</button>
 </div>
 
-<!-- BANNER AD -->
-<div class="box">
-<p style="text-align:center; background:#ffeaa7; padding:10px; border-radius:5px">
-📢 <b>Kwamamaza hano</b><br>
-📱 Hamagara: +250 792 552 013
-</p>
-</div>
+<!-- STATIC ADS -->
+<div class="ad-banner">📢 <b>Kwamamaza hano</b> | Hamagara: +250 792 552 013</div>
+
+<!-- DYNAMIC ADS -->
+<div id="dynamicAd" class="ad-banner"></div>
 
 </div>
 
@@ -92,94 +102,88 @@ footer { background:#222; color:white; text-align:center; padding:10px; }
 </footer>
 
 <script>
-let currentUser = null;
-
-// Firebase config
+// ---------- Firebase config ----------
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID"
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_MSG_ID",
+  appId: "YOUR_APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+let currentUser = null;
 
-// Register
+// ---------- Auth ----------
 function register(){
   auth.createUserWithEmailAndPassword(email.value, password.value)
-  .then(() => alert("Account yakozwe!"))
-  .catch(e => alert(e.message));
+  .then(()=>alert("Account yakozwe!"))
+  .catch(e=>alert(e.message));
 }
-
-// Login
 function login(){
-  auth.signInWithEmailAndPassword(email.value, password.value)
-  .then(user => {
-    currentUser = user.user;
+  auth.signInWithEmailAndPassword(email.value,password.value)
+  .then(user=>{
+    currentUser=user.user;
     loginBox.classList.add("hidden");
     contentBox.classList.remove("hidden");
     searchBox.classList.remove("hidden");
     checkVIP();
-  })
-  .catch(e => alert(e.message));
+  }).catch(e=>alert(e.message));
 }
+function logout(){ auth.signOut(); location.reload(); }
 
-// Logout
-function logout(){
-  auth.signOut();
-  location.reload();
-}
-
-// Show VIP
+// ---------- VIP ----------
 function showVIP(){ vipBox.classList.remove("hidden"); }
 function closeVIP(){ vipBox.classList.add("hidden"); }
-
-// Request VIP
 function requestVIP(){
-  db.collection("vip_requests").doc(currentUser.uid).set({
-    email: currentUser.email,
-    status: "pending"
-  });
+  db.collection("vip_requests").doc(currentUser.uid).set({ email:currentUser.email, status:"pending" });
   alert("VIP request yoherejwe!");
 }
-
-// Check VIP
 function checkVIP(){
   db.collection("vip_users").doc(currentUser.uid).get()
   .then(doc=>{
     if(doc.exists){
-      document.getElementById("vipLock1").innerText="🔓 VIP ACTIVE";
-      document.getElementById("vipLock1").style.color="green";
-      document.getElementById("vipLock2").innerText="🔓 VIP ACTIVE";
-      document.getElementById("vipLock2").style.color="green";
+      document.getElementById("vipLock1").innerText="🔓 VIP ACTIVE"; document.getElementById("vipLock1").style.color="green";
+      document.getElementById("vipLock2").innerText="🔓 VIP ACTIVE"; document.getElementById("vipLock2").style.color="green";
     }
   });
 }
 
-// Download VIP
+// ---------- Download ----------
 function downloadVIP(fileId){
   db.collection("vip_users").doc(currentUser.uid).get()
   .then(doc=>{
-    if(doc.exists){
-      window.open("https://drive.google.com/uc?id="+fileId+"&export=download");
-    }else{
-      alert("❌ Iyi download ni iya VIP gusa.");
-    }
+    if(doc.exists){ window.open("https://drive.google.com/uc?id="+fileId+"&export=download"); }
+    else{ alert("❌ Iyi download ni iya VIP gusa."); }
   });
 }
 
-// Play free content
+// ---------- Play free ----------
 function play(content){ alert("Ureba: "+content); }
 
-// Search
+// ---------- Search ----------
 function searchContent(){
-  let input = document.getElementById("searchInput").value.toLowerCase();
-  let movies = document.getElementsByClassName("movie");
-  for(let i=0;i<movies.length;i++){
-    movies[i].style.display = movies[i].innerText.toLowerCase().includes(input) ? "" : "none";
-  }
+  let input=document.getElementById("searchInput").value.toLowerCase();
+  let movies=document.getElementsByClassName("movie");
+  for(let i=0;i<movies.length;i++){ movies[i].style.display=movies[i].innerText.toLowerCase().includes(input)?"":"none"; }
 }
-</script>
 
+// ---------- DYNAMIC ADS ----------
+const ads = [
+  "📢 Promote your film! Call +250 792 552 013",
+  "⭐ Become VIP 300 RWF/week via MoMo",
+  "🎬 AGASOBANUYE promotions here!"
+];
+function showRandomAd(){
+  const adDiv = document.getElementById("dynamicAd");
+  const randomIndex = Math.floor(Math.random()*ads.length);
+  adDiv.innerHTML = ads[randomIndex];
+}
+showRandomAd();
+setInterval(showRandomAd,10000);
+
+</script>
 </body>
 </html>
