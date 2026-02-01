@@ -69,7 +69,7 @@ footer { background:#222; color:white; text-align:center; padding:15px; margin-t
 </div>
 <div class="card movie free">
 <b>Gaheza Simba – Film 2</b><br>
-<button class="primary" onclick="play('Free Content')">▶ Reba</button>
+<div>
 <div class="movie-card">
   <h3>FILIME: Izina rya Filime</h3>
   <p>Genre: Drama</p>
@@ -198,6 +198,10 @@ function showRandomAd(){
 showRandomAd();
 setInterval(showRandomAd,10000);
 
+function watchMovie(fileId){
+  const url = "https://drive.google.com/file/d/" + fileId + "/preview";
+  window.open(url, "_blank");
+}
 </script>
 </body>
 </html>
