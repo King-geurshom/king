@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "8772489983",
+    "project_id": "king-movi",
+    "storage_bucket": "king-movi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8772489983:android:b662a50428d6fe187632ca",
+        "android_client_info": {
+          "package_name": "king.movies"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGWE_ot70QZZq51vxMhWmBVwMMUHKudrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
