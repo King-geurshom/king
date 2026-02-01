@@ -23,6 +23,29 @@ const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
  ***********************/
 auth.onAuthStateChanged(async user => {
   if (!user) return;
+auth.onAuthStateChanged(async user => {
+  if (!user) return;
+
+  // ADMIN AUTO REDIRECT
+  if (user.email === "umwamiking2500@gmail.com") {
+    if (!window.location.href.includes("admin.html")) {
+      window.location.href = "admin.html";
+    }
+    return;
+  }
+
+  // NORMAL USER
+  const doc = await db.collection("users").doc(user.uid).get();
+  if (!doc.exists) {
+    await db.collection("users").doc(user.uid).set({
+      vip: false,
+      vipUntil: null,
+      createdAt: Date.now()
+    });
+  }
+
+  checkVIP(user.uid);
+});
 
   // Admin check
   if (user.email === ADMIN_EMAIL) {
