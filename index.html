@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geurshom Service Studio</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<style>
+body { font-family: Arial; background:#f2f2f2; margin:0; }
+header { background:#0a3d62; color:white; padding:15px; text-align:center; }
+.container { padding:15px; }
+.box { background:white; padding:15px; margin-bottom:15px; border-radius:6px; }
+button { padding:10px 15px; background:#0a3d62; color:white; border:none; border-radius:5px; cursor:pointer; }
+button.red { background:#c0392b; }
+.hidden { display:none; }
+.lock { color:red; font-weight:bold; }
+input { width:100%; padding:10px; margin:5px 0; }
+.movie { padding:8px 0; border-bottom:1px solid #ddd; }
+footer { background:#222; color:white; text-align:center; padding:10px; }
+</style>
+</head>
+<body>
+
+<header>
+<h2>GEURSHOM SERVICE STUDIO</h2>
+<p>VIP = 300 RWF / WEEK</p>
+</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+<h3>🔐 Login / Register</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+</div>
+
+<!-- SEARCH -->
+<div class="box hidden" id="searchBox">
+<input id="searchInput" placeholder="Shakisha film cyangwa umusobanuzi..." onkeyup="searchContent()">
+</div>
+
+<!-- CONTENT -->
+<div class="box hidden" id="contentBox">
+<h3>🎬 AGASOBANUYE</h3>
+<div class="movie vip">
+<b>Rocky Kimono – Film 1</b>
+<span id="vipLock1" class="lock">🔒 VIP</span><br>
+<button onclick="downloadVIP('FILE_ID_1')">⬇️ Download</button>
+</div>
+<div class="movie free">
+<b>Gaheza Simba – Film 2</b><br>
+<button onclick="play('Free Content')">▶ Reba</button>
+</div>
+<div class="movie vip">
+<b>Saga Mwiza – Film 3</b>
+<span id="vipLock2" class="lock">🔒 VIP</span><br>
+<button onclick="downloadVIP('FILE_ID_2')">⬇️ Download</button>
+</div>
+<button onclick="showVIP()">⭐ Become VIP</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<!-- VIP PAYMENT -->
+<div class="box hidden" id="vipBox">
+<h3>⭐ Become VIP</h3>
+<p>💳 MTN MoMo: <b>+250 792 552 013</b></p>
+<p>💰 300 RWF / 7 Days</p>
+<button onclick="requestVIP()">I PAID</button>
+<button class="red" onclick="closeVIP()">Close</button>
+</div>
+
+<!-- BANNER AD -->
+<div class="box">
+<p style="text-align:center; background:#ffeaa7; padding:10px; border-radius:5px">
+📢 <b>Kwamamaza hano</b><br>
+📱 Hamagara: +250 792 552 013
+</p>
+</div>
+
+</div>
+
+<footer>
+<p>📞 +250 792 552 013 | +250 780 989 311</p>
+</footer>
+
+<script>
+let currentUser = null;
+
+// Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Register
+function register(){
+  auth.createUserWithEmailAndPassword(email.value, password.value)
+  .then(() => alert("Account yakozwe!"))
+  .catch(e => alert(e.message));
+}
+
+// Login
+function login(){
+  auth.signInWithEmailAndPassword(email.value, password.value)
+  .then(user => {
+    currentUser = user.user;
+    loginBox.classList.add("hidden");
+    contentBox.classList.remove("hidden");
+    searchBox.classList.remove("hidden");
+    checkVIP();
+  })
+  .catch(e => alert(e.message));
+}
+
+// Logout
+function logout(){
+  auth.signOut();
+  location.reload();
+}
+
+// Show VIP
+function showVIP(){ vipBox.classList.remove("hidden"); }
+function closeVIP(){ vipBox.classList.add("hidden"); }
+
+// Request VIP
+function requestVIP(){
+  db.collection("vip_requests").doc(currentUser.uid).set({
+    email: currentUser.email,
+    status: "pending"
+  });
+  alert("VIP request yoherejwe!");
+}
+
+// Check VIP
+function checkVIP(){
+  db.collection("vip_users").doc(currentUser.uid).get()
+  .then(doc=>{
+    if(doc.exists){
+      document.getElementById("vipLock1").innerText="🔓 VIP ACTIVE";
+      document.getElementById("vipLock1").style.color="green";
+      document.getElementById("vipLock2").innerText="🔓 VIP ACTIVE";
+      document.getElementById("vipLock2").style.color="green";
+    }
+  });
+}
+
+// Download VIP
+function downloadVIP(fileId){
+  db.collection("vip_users").doc(currentUser.uid).get()
+  .then(doc=>{
+    if(doc.exists){
+      window.open("https://drive.google.com/uc?id="+fileId+"&export=download");
+    }else{
+      alert("❌ Iyi download ni iya VIP gusa.");
+    }
+  });
+}
+
+// Play free content
+function play(content){ alert("Ureba: "+content); }
+
+// Search
+function searchContent(){
+  let input = document.getElementById("searchInput").value.toLowerCase();
+  let movies = document.getElementsByClassName("movie");
+  for(let i=0;i<movies.length;i++){
+    movies[i].style.display = movies[i].innerText.toLowerCase().includes(input) ? "" : "none";
+  }
+}
+</script>
+
+</body>
+</html>
