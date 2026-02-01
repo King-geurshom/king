@@ -1,43 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="rw">
 <head>
-<title>Admin - VIP</title>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard | Geurshom Service</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background: #0a3d62;
+      color: white;
+    }
+    button {
+      padding: 6px 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .vip {
+      background: green;
+      color: white;
+    }
+    .logout {
+      background: red;
+      color: white;
+      float: right;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>VIP Requests + Stats</h2>
-<ul id="list"></ul>
+<button class="logout" onclick="logout()">Logout</button>
+
+<h1>👑 Admin Dashboard</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>VIP</th>
+      <th>VIP Until</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="usersTable"></tbody>
+</table>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-// Firebase config
+/***********************
+ * FIREBASE CONFIG
+ ***********************/
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID"
+  apiKey: "API_KEY",
+  authDomain: "PROJECT_ID.firebaseapp.com",
+  projectId: "PROJECT_ID",
 };
+
 firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
 const db = firebase.firestore();
 
-const list = document.getElementById("list");
+const ADMIN_EMAIL = "umwamiking2500@gmail.com";
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
-// Load VIP requests
-db.collection("vip_requests").onSnapshot(snapshot=>{
-  list.innerHTML="";
-  snapshot.forEach(doc=>{
-    let li=document.createElement("li");
-    li.innerHTML=doc.data().email + 
-    ' <button onclick="approve(\''+doc.id+'\')">Approve</button>';
-    list.appendChild(li);
-  });
+/***********************
+ * AUTH CHECK
+ ***********************/
+auth.onAuthStateChanged(user => {
+  if (!user || user.email !== ADMIN_EMAIL) {
+    alert("Nturi admin ❌");
+    window.location.href = "index.html";
+  } else {
+    loadUsers();
+  }
 });
 
-// Approve VIP
-function approve(uid){
-  db.collection("vip_users").doc(uid).set({vip:true});
-  db.collection("vip_requests").doc(uid).delete();
-  alert("VIP Approved!");
+/***********************
+ * LOAD USERS
+ ***********************/
+async function loadUsers() {
+  const table = document.getElementById("usersTable");
+  table.innerHTML = "";
+
+  const snapshot = await db.collection("users").get();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    const vipStatus =
+      data.vipUntil && Date.now() < data.vipUntil ? "YES" : "NO";
+
+    const vipUntil = data.vipUntil
+      ? new Date(data.vipUntil).toLocaleDateString()
+      : "-";
+
+    table.innerHTML += `
+      <tr>
+        <td>${doc.id}</td>
+        <td>${vipStatus}</td>
+        <td>${vipUntil}</td>
+        <td>
+          <button class="vip" onclick="makeVIP('${doc.id}')">
+            Make VIP (7 days)
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/***********************
+ * MAKE USER VIP
+ ***********************/
+async function makeVIP(uid) {
+  await db.collection("users").doc(uid).update({
+    vip: true,
+    vipUntil: Date.now() + ONE_WEEK
+  });
+  alert("User yabaye VIP 💎");
+  loadUsers();
+}
+
+/***********************
+ * LOGOUT
+ ***********************/
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "index.html";
+  });
 }
 </script>
 
