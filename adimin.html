@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin - VIP</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<h2>VIP Requests + Stats</h2>
+<ul id="list"></ul>
+
+<script>
+// Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const list = document.getElementById("list");
+
+// Load VIP requests
+db.collection("vip_requests").onSnapshot(snapshot=>{
+  list.innerHTML="";
+  snapshot.forEach(doc=>{
+    let li=document.createElement("li");
+    li.innerHTML=doc.data().email + 
+    ' <button onclick="approve(\''+doc.id+'\')">Approve</button>';
+    list.appendChild(li);
+  });
+});
+
+// Approve VIP
+function approve(uid){
+  db.collection("vip_users").doc(uid).set({vip:true});
+  db.collection("vip_requests").doc(uid).delete();
+  alert("VIP Approved!");
+}
+</script>
+
+</body>
+</html>
