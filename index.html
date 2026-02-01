@@ -73,15 +73,14 @@ footer { background:#222; color:white; text-align:center; padding:15px; margin-t
 <div class="movie-card">
   <h3>FILIME TRAP</h3>
   <p>Genre: Drama</p>
-<div id="moviescontainer"><div>
-  async function loadMovies(){
+  <async function loadMovies(){
   const container = document.getElementById("moviesContainer");
   container.innerHTML = "";
-
-  const snapshot = await db.collection("movies").orderBy("uploadedAt","desc").get();
+    
+ < const snapshot = await db.collection>("movies").orderBy("uploadedAt","desc").get();
   snapshot.forEach(doc => {
     const data = doc.data();
-
+    
     container.innerHTML += `
       <div class="movie-card">
         <h3>${data.title}</h3>
