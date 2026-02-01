@@ -71,8 +71,27 @@ footer { background:#222; color:white; text-align:center; padding:15px; margin-t
 <b>Gaheza Simba – Film 2</b><br>
 <div>
 <div class="movie-card">
-  <h3>FILIME: Izina rya Filime</h3>
+  <h3>FILIME TRAP</h3>
   <p>Genre: Drama</p>
+<div id="moviescontainer"><div>
+  async function loadMovies(){
+  const container = document.getElementById("moviesContainer");
+  container.innerHTML = "";
+
+  const snapshot = await db.collection("movies").orderBy("uploadedAt","desc").get();
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    container.innerHTML += `
+      <div class="movie-card">
+        <h3>${data.title}</h3>
+        <p>${data.genre}</p>
+        <button onclick="watchMovie('${data.driveId}')">▶️ Reba Online</button>
+        <button onclick="downloadMovie('${data.driveId}')">⬇️ Download (VIP)</button>
+      </div>
+    `;
+  });
+}
 
   <!-- REBA ONLINE -->
   <button onclick="watchMovie('1R-_fjLA9c-NzAlADhV3I84yoH-Hqjwem')">
@@ -80,7 +99,7 @@ footer { background:#222; color:white; text-align:center; padding:15px; margin-t
   </button>
 
   <!-- DOWNLOAD VIP -->
-  <button onclick="downloadVIP('1R-_fjLA9c-NzAlADhV3I84yoH-Hqjwem')">
+  <button onclick="download('1R-_fjLA9c-NzAlADhV3I84yoH-Hqjwem')">
     ⬇️ Download (VIP)
   </button>
 </div>
