@@ -54,6 +54,11 @@
 <button class="logout" onclick="logout()">Logout</button>
 
 <h1>👑 Admin Dashboard</h1>
+<h2>📤 Upload Movie (Admin Only)</h2>
+<input type="text" id="movieTitle" placeholder="Izina rya filime">
+<input type="text" id="movieGenre" placeholder="Genre (Action/Drama/Series)">
+<input type="text" id="movieDriveId" placeholder="Google Drive FILE ID">
+<button onclick="uploadMovie()">Upload</button>
 
 <table>
   <thead>
@@ -155,7 +160,31 @@ function logout() {
     window.location.href = "index.html";
   });
 }
-</script>
+</script
+  async function uploadMovie() {
+  const title = document.getElementById("movieTitle").value.trim();
+  const genre = document.getElementById("movieGenre").value.trim();
+  const driveId = document.getElementById("movieDriveId").value.trim();
+
+  if(!title || !genre || !driveId){
+    alert("Andika title, genre na drive ID");
+    return;
+  }
+
+  // Random movie ID
+  const movieId = "movie_" + Date.now();
+
+  await db.collection("movies").doc(movieId).set({
+    title,
+    genre,
+    driveId,
+    uploadedAt: Date.now()
+  });
+
+  alert("Firime yashyizweho neza ✅");
+  loadMoviesTable(); // optional: refresh list yerekana movie nshya
+}
+
 
 </body>
 </html>
